@@ -23,3 +23,10 @@ A cache that only checks expiry on `get` never frees memory for keys that are re
 ## The awkward edge
 
 Expiry is inclusive: an entry with a lifetime of `L` is expired as soon as `now() >= storedAt + L`. A lifetime of `0` therefore expires immediately, which is occasionally surprising but is the consistent reading of the rule. The clock is a constructor argument rather than a hard-coded `Date.now` so tests can advance time explicitly and never depend on wall-clock timing.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
